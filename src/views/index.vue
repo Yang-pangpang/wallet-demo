@@ -21,7 +21,7 @@ let walletInfo = reactive<Array>([])
 
 
 onMounted(()=> {
-  walletInfo = store2.get('walletData') || null
+    walletInfo = store2.get('walletData') || null
   console.log('onMounted查本地钱包',walletInfo) 
 })
 // const validatorMessage  = () => `two passwords don't macth`
@@ -67,9 +67,7 @@ const mnemonicClick = () =>{
   }else {
     createWalletInfo()
   }
-
 }
-  
   // 通过私钥生成钱包账户
   const createWalletInfo = async() => {
     isLoading.value = true
@@ -103,7 +101,6 @@ const mnemonicClick = () =>{
     showNotify({ type: 'success', message: 'create wallet success' })
   }
 </script>
- 
 <template>
 <div>
 <h1>WALLET-DEMO</h1>
@@ -148,7 +145,7 @@ const mnemonicClick = () =>{
   </div>
 </van-overlay>
 
-<AccountsList :walletInfo="walletInfo"/>
+<AccountsList v-if="walletInfo" :walletInfo="walletInfo"/>
 </div>
 </template>
  

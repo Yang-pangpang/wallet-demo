@@ -14,7 +14,6 @@ export default defineConfig({
       resolvers: [VantResolver()],
     }),
   ],
-
   server: {
     open: true
   },
