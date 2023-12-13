@@ -20,11 +20,15 @@ const isLoading =ref(false)
 let walletInfo = reactive<Array>([])
 
 
-onMounted(()=> {
-    walletInfo = store2.get('walletData') || null
-  console.log('onMounted查本地钱包',walletInfo) 
-})
-// const validatorMessage  = () => `two passwords don't macth`
+onMounted(async () => {
+      try {
+        const result = await store2.get('walletData') || null
+        walletInfo.value = result;
+        console.log('===result',result)
+      } catch (error) {
+        console.log(error);
+      }
+    });
 const handleConfirm = () =>{
   // 检查mnemonic是否正确初始化
   if(password.value == '' || confirmPassword.value == '') {
