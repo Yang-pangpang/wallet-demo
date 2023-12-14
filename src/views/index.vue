@@ -22,33 +22,38 @@ let walletInfo = reactive<Array>([])
 
 onMounted(async () => {
       try {
-        const result = await store2.get('walletData') || null
+        const result = await store2.get('walletData') || []
         walletInfo.value = result;
-        console.log('===result',result)
       } catch (error) {
         console.log(error);
       }
     });
 const handleConfirm = () =>{
+  console.log('本地是否有助记词',walletInfo.value)
+  const emptyPasswordMessage = `Please input password`;
+  const twoPasswordNotMatchMessage = `Two passwords don't match`;
+  const passWordValue = password.value;
+  const confirmPasswordValue = confirmPassword.value;
   // 检查mnemonic是否正确初始化
-  if(password.value == '' || confirmPassword.value == '') {
-    showNotify({ type: 'danger', message: 'Please input password' })
-  }else if(password.value !== confirmPassword.value) {
-    showNotify({ type: 'danger', message: 'Two passwords don\'t match'})
+  if(passWordValue === '' || confirmPasswordValue === '') {
+    showNotify({ type: 'danger', message: emptyPasswordMessage })
+  }else if(passWordValue !== confirmPasswordValue) {
+    showNotify({ type: 'danger', message: twoPasswordNotMatchMessage})
+  }
+  
+  
+  const walletMnemonic = walletInfo && walletInfo.value && walletInfo.value[0] && walletInfo.value[0].mnemonic;
+  if(walletMnemonic !== undefined) {
+    console.log('有助记词',walletMnemonic)
+    // 本地有助记词，直接拿去本地助记词创建账号信息 
+    mnemonic.value = walletMnemonic;
+    mnemonicClick();
   }else {
-    // 判断本地local里面是否有助记词,如果有就不是第一次创建钱包，可以继续使用之前的助记词，如果没有则需要创建新的钱包
-    console.log('hahahaha',walletInfo?.[0].mnemonic)
-    const mnemonicValue: string = walletInfo?.[0]?.mnemonic || bip39.generateMnemonic();
-    mnemonic.value = mnemonicValue
-    handleCancel()
-    // 如果有助记词，则可以直接调用生成账户的方法
-    console.log('本地是否有助记词',walletInfo)
-    if(walletInfo) {
-      // 如果有助记词了，不需要再次复制粘贴，直接复制生成账号信息
-      console.log('有助记词',walletInfo?.[0]?.mnemonic)
-      mnemonicWord.value = walletInfo?.[0]?.mnemonic
-      mnemonicClick()
-    }
+    // 如果本地没有就生成新的助记词
+    const newMnemonic = bip39.generateMnemonic();
+    mnemonic.value = newMnemonic;
+    handleCancel();
+    console.log('新的助记词',newMnemonic)
   }
 
 }
@@ -62,15 +67,17 @@ const handleCancel = () =>{
   isMnemonic.value = true
  }
 const mnemonicClick = () =>{
-  console.log('对比',mnemonicWord.value)
-  console.log('====',mnemonic.value)
-  if(mnemonicWord.value == '') {
-    showNotify({ type: 'danger', message: 'mnemonic word is empty' })
-  }else if( mnemonicWord.value.length < 12 || mnemonicWord.value !== mnemonic.value) {
-    showNotify({ type: 'danger', message: 'mnemonic word is error' })
-  }else {
-    createWalletInfo()
-  }
+  createWalletInfo()
+
+  // console.log('对比',mnemonicWord.value)
+  // console.log('====',mnemonic.value)
+  // if(mnemonicWord.value == '') {
+  //   showNotify({ type: 'danger', message: 'mnemonic word is empty' })
+  // }else if( mnemonicWord.value.length < 12 || mnemonicWord.value !== mnemonic.value) {
+  //   showNotify({ type: 'danger', message: 'mnemonic word is error' })
+  // }else {
+  //   createWalletInfo()
+  // }
 }
   // 通过私钥生成钱包账户
   const createWalletInfo = async() => {
@@ -88,7 +95,7 @@ const mnemonicClick = () =>{
     const keyStore = await wallet.toV3(password.value)
     let walletData: (string | number)[] = []
     const walletObj = {
-      id:0,
+      id:storeWallet.length,
       address: lowerCaseAddress,
       privateKey,
       CheckSumAddress,
@@ -149,7 +156,7 @@ const mnemonicClick = () =>{
   </div>
 </van-overlay>
 
-<AccountsList v-if="walletInfo" :walletInfo="walletInfo"/>
+<AccountsList :walletInfo="walletInfo"/>
 </div>
 </template>
  
