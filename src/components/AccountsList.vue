@@ -12,7 +12,15 @@ const activeNames = ref([]);
 <div class="accountsList">
   <van-collapse v-model="activeNames">
   <van-collapse-item :title="showStr(item.address)"  icon="user-o" v-for="item in props.walletInfo.value" :key="item.id" :name="item.id">
-    {{ item.mnemonic }}
+    <van-space size="2rem">
+      Balance: {{item.balance}}
+</van-space>
+  <br>
+  <br>
+   <van-space size="2rem">
+    <van-button small type="success" @click="transfer">transfer</van-button>
+    <van-button  small type="danger">show privateKey</van-button>
+   </van-space>
   </van-collapse-item>
 </van-collapse>
 </div>

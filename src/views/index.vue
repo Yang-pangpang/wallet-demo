@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 import { showNotify } from 'vant';
 import * as bip39 from 'bip39'
 import store2 from 'store2'
 import { hdkey } from 'ethereumjs-wallet'
 import AccountsList from '@/components/AccountsList.vue'
-import { reactive } from 'vue';
 
 const createWallet = () => {
   isShow.value = true
@@ -104,6 +103,7 @@ const mnemonicClick = () =>{
       balance: 0
     }
     walletData = [...storeWallet, walletObj]
+    walletInfo.value = [...storeWallet, walletObj]
     console.log(walletData)
      // 生成对象先存储仔本地Local,注意正式环境中不能存仔本地
     store2('walletData', walletData)
