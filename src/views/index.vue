@@ -7,6 +7,8 @@ import { hdkey } from 'ethereumjs-wallet'
 import AccountsList from '@/components/AccountsList.vue'
 
 const createWallet = () => {
+  password.value = '',
+  confirmPassword.value = '',
   isShow.value = true
 }
 const mnemonic = ref('')
@@ -38,10 +40,10 @@ const handleConfirm = () =>{
     showNotify({ type: 'danger', message: emptyPasswordMessage })
   }else if(passWordValue !== confirmPasswordValue) {
     showNotify({ type: 'danger', message: twoPasswordNotMatchMessage})
-  }
+  }else {
   
   
-  const walletMnemonic = walletInfo && walletInfo.value && walletInfo.value[0] && walletInfo.value[0].mnemonic;
+    const walletMnemonic = walletInfo && walletInfo.value && walletInfo.value[0] && walletInfo.value[0].mnemonic;
   if(walletMnemonic !== undefined) {
     console.log('有助记词',walletMnemonic)
     // 本地有助记词，直接拿去本地助记词创建账号信息 
@@ -54,10 +56,12 @@ const handleConfirm = () =>{
     handleCancel();
     console.log('新的助记词',newMnemonic)
   }
+  }
+
 
 }
 const handleCancel = () =>{
-  password.value = ''
+  // password.value = ''
   confirmPassword.value = ''
   mnemonicWord.value = ''
 }
@@ -96,6 +100,7 @@ const mnemonicClick = () =>{
     const walletObj = {
       id:storeWallet.length,
       address: lowerCaseAddress,
+      password: password.value,
       privateKey,
       CheckSumAddress,
       keyStore,
